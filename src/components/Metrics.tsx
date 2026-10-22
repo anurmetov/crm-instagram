@@ -25,7 +25,7 @@ export function Metrics({ leads, navigate, onOpen }: { leads: Lead[]; navigate: 
     <article className="metric-card won-metric">
       <div className="metric-heading"><div><h2>Успешные сделки</h2><p>Получено: <b>{money(stats.revenue)}</b><span className="lime-dot" />{stats.won} сделки</p></div><button className="round-arrow" onClick={() => navigate('analytics')} aria-label="Аналитика успешных сделок"><ArrowUpRight size={18} /></button></div>
       <div className="mini-table"><div className="mini-table-head"><span>Клиент</span><span>Сумма</span><span>Статус</span></div>
-        {won.slice(0, 3).map(lead => <button className="mini-deal" key={lead.id} onClick={() => onOpen(lead)}><span className="mini-person"><Avatar lead={lead} /><span><b>{lead.name}</b><small>@{lead.handle}</small></span></span><b>{money(lead.amount)}</b><span className="paid-label">Оплачено</span></button>)}
+        {won.slice(0, 3).map(lead => <button className="mini-deal" key={lead.id} onClick={() => onOpen(lead)}><span className="mini-person"><Avatar lead={lead} /><span><b>{lead.name}</b><small>{lead.handle ? `@${lead.handle}` : 'Ник пока недоступен'}</small></span></span><b>{money(lead.amount)}</b><span className="paid-label">Оплачено</span></button>)}
         {!won.length && <p className="mini-empty">Здесь появятся ваши первые победы.</p>}
       </div>
     </article>

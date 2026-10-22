@@ -3,16 +3,16 @@ import { expect, test } from '@playwright/test';
 test.beforeEach(async ({ page }) => { await page.goto('/'); await expect(page.getByRole('heading', { name: 'От диалога к сделке' })).toBeVisible(); });
 
 test('creates, edits and retains a contact after reload', async ({ page, isMobile }) => {
-  await page.getByRole('button', { name: isMobile ? 'Добавить контакт' : 'Новый контакт', exact: true }).click();
+  await page.getByRole('button', { name: isMobile ? 'Добавить контакт' : 'Новый лид', exact: true }).click();
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('textbox', { name: 'Имя', exact: true }).fill('Тестовый контакт');
   await dialog.getByRole('textbox', { name: 'Ник в Instagram' }).fill('test.contact');
-  await dialog.getByRole('textbox', { name: 'Что нужно сделать?' }).fill('Отправить предложение');
   await dialog.getByRole('button', { name: 'Добавить контакт' }).click();
   await expect(dialog).not.toBeVisible();
   await page.getByRole('searchbox').fill('test.contact');
   await page.getByRole('button', { name: 'Открыть контакт Тестовый контакт', exact: true }).filter({ visible: true }).click();
-  await dialog.getByRole('combobox', { name: 'Этап сделки' }).selectOption('dialogue');
+  await dialog.getByRole('combobox', { name: 'Этап сделки' }).click();
+  await page.getByRole('option', { name: 'Переписка', exact: true }).click();
   await dialog.getByRole('textbox', { name: 'Заметки', exact: true }).fill('Важный контекст');
   await dialog.getByRole('button', { name: 'Сохранить изменения' }).click();
   await page.reload();
@@ -20,23 +20,23 @@ test('creates, edits and retains a contact after reload', async ({ page, isMobil
   await expect(page.getByText('Важный контекст').filter({ visible: true })).toBeVisible();
 });
 
-test('search, filters, empty state and responsive table work', async ({ page }) => {
+test('search, filters and cards work without a table view', async ({ page }) => {
   await page.getByRole('searchbox').fill('нет-такого-контакта'); await expect(page.getByRole('heading', { name: 'Никого не нашли' })).toBeVisible();
   await page.getByRole('button', { name: 'Сбросить фильтры', exact: true }).click();
   await page.getByRole('button', { name: 'Открыть фильтры', exact: true }).click();
   await page.getByRole('switch', { name: 'Только горячие лиды' }).check();
   await page.getByRole('button', { name: /Показать/ }).click();
   await expect(page.getByText('Найдено контактов: 5')).toBeVisible();
-  await page.getByRole('button', { name: 'Таблица', exact: true }).click();
-  await expect(page.locator('tbody tr')).toHaveCount(5);
-  await page.getByRole('checkbox', { name: 'Выбрать Алина Смирнова' }).check();
-  await page.getByRole('combobox', { name: 'Этап для выбранных контактов' }).selectOption('dialogue');
-  await expect(page.getByText('Выбрано: 1')).not.toBeVisible();
-  await expect(page.locator('tbody tr').filter({ hasText: 'Алина Смирнова' }).getByText('Переписка')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Таблица', exact: true })).toHaveCount(0);
+  await expect(page.locator('.lead-card').filter({ visible: true })).toHaveCount(5);
+  await page.goto('/#leads');
+  await expect(page.getByRole('heading', { name: 'База контактов' })).toBeVisible();
+  await expect(page.locator('.lead-card').filter({ visible: true })).toHaveCount(20);
+  await expect(page.locator('.leads-table, .view-toggle')).toHaveCount(0);
 });
 
 test('prevents duplicate handles and protects unsaved edits', async ({ page, isMobile }) => {
-  await page.getByRole('button', { name: isMobile ? 'Добавить контакт' : 'Новый контакт', exact: true }).click();
+  await page.getByRole('button', { name: isMobile ? 'Добавить контакт' : 'Новый лид', exact: true }).click();
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('textbox', { name: 'Имя', exact: true }).fill('Дубликат'); await dialog.getByRole('textbox', { name: 'Ник в Instagram' }).fill('ALINA.SMM');
   await dialog.getByRole('button', { name: 'Добавить контакт' }).click();
@@ -66,28 +66,23 @@ test('moves a deal with drag and drop or the mobile next-step button', async ({ 
   }
 });
 
-test('tasks complete with undo, integration demo deduplicates and CSV downloads', async ({ page }) => {
-  await page.goto('/#tasks');
-  const firstTask = page.getByRole('button', { name: /^Завершить:/ }).first(), taskLabel = await firstTask.getAttribute('aria-label');
-  await firstTask.click(); await expect(page.getByRole('button', { name: taskLabel!, exact: true })).not.toBeVisible();
-  await page.getByRole('button', { name: 'Отменить', exact: true }).click(); await expect(page.getByRole('button', { name: taskLabel!, exact: true })).toBeVisible();
-  await page.goto('/#integrations'); await page.locator('.integration-card').getByRole('button', { name: 'Тестовое входящее', exact: true }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'В воронку', exact: true }).click();
-  await page.locator('.integration-card').getByRole('button', { name: 'Тестовое входящее', exact: true }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'В воронку', exact: true }).click();
-  await expect(page.getByText('Входящее записано. Текущий этап сохранён.')).toBeVisible();
-  const download = page.waitForEvent('download'); await page.getByRole('button', { name: 'Скачать контакты', exact: true }).click();
+test('filtered contacts download as CSV', async ({ page }) => {
+  await page.goto('/#leads');
+  await page.getByRole('searchbox').fill('alina.smm');
+  await expect(page.locator('.lead-card').filter({ visible: true })).toHaveCount(1);
+  const download = page.waitForEvent('download'); await page.getByRole('button', { name: 'Экспорт контактов в CSV', exact: true }).click();
   expect((await download).suggestedFilename()).toMatch(/^potok-.*\.csv$/);
-  await page.goto('/#leads'); await page.getByRole('searchbox').fill('anastasia.new'); await expect(page.locator('tbody tr')).toHaveCount(1);
 });
 
 test('all sections fit narrow phones, tablets and desktop without page overflow', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const section of ['pipeline', 'leads', 'tasks', 'analytics', 'integrations']) {
+    for (const section of ['pipeline', 'leads', 'analytics']) {
       await page.goto('/#' + section); await expect(page.locator('h1')).toBeVisible(); await page.evaluate(() => document.fonts.ready);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${section} at ${width}px`).toBe(true);
+      await expect(page.locator('a[href="#tasks"], a[href="#integrations"], .card-next-action, .task-cell, .due-badge')).toHaveCount(0);
+      await expect(page.locator('.view-toggle, .leads-table, .top-add, .owner-avatar')).toHaveCount(0);
     }
   }
   expect(errors).toEqual([]);

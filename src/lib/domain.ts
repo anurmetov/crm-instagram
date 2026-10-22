@@ -13,7 +13,7 @@ export const stageSchema = z.enum(['new', 'dialogue', 'booked', 'called', 'payme
 export type StageId = z.infer<typeof stageSchema>;
 export const stageById = Object.fromEntries(STAGES.map(stage => [stage.id, stage])) as Record<StageId, typeof STAGES[number]>;
 export const historySchema = z.object({
-  at: z.iso.datetime(), kind: z.enum(['created', 'stage', 'note', 'incoming', 'task']),
+  at: z.iso.datetime(), kind: z.enum(['created', 'stage', 'note', 'incoming', 'outgoing', 'task']),
   text: z.string(), to: stageSchema.optional(),
 });
 export const leadFieldsSchema = z.object({
@@ -31,27 +31,27 @@ export const leadFieldsSchema = z.object({
   priority: z.enum(['normal', 'hot']),
   lostReason: z.string().max(160),
 });
-export const leadSchema = leadFieldsSchema.extend({
+export const leadSchema = leadFieldsSchema.omit({ handle: true }).extend({
+  handle: z.union([z.literal(''), leadFieldsSchema.shape.handle]),
+  instagram: z.object({ accountId: z.string().regex(/^\d{1,40}$/), userId: z.string().regex(/^\d{1,40}$/) }).optional(),
   id: z.string().min(1), color: z.number().int().nonnegative(),
   created: z.iso.datetime(), updated: z.iso.datetime(), history: z.array(historySchema),
-});
+}).refine(lead => !!lead.handle || !!lead.instagram, { message: 'Укажите Instagram-ник', path: ['handle'] });
 export const leadsSchema = z.array(leadSchema);
 export type Lead = z.infer<typeof leadSchema>;
 export type LeadFields = z.infer<typeof leadFieldsSchema>;
-export type Page = 'pipeline' | 'leads' | 'tasks' | 'analytics' | 'integrations';
+export type Page = 'pipeline' | 'leads' | 'analytics';
 export const PAGE_META: Record<Page, { title: string; description: string }> = {
   pipeline: { title: 'Воронка продаж', description: 'От первого «привет» до первой оплаты.' },
-  leads: { title: 'Все контакты', description: 'Каждый человек. Каждый следующий шаг.' },
-  tasks: { title: 'Ваш следующий шаг', description: 'Нужный человек. Нужное действие. Вовремя.' },
+  leads: { title: 'Все контакты', description: 'Все ваши знакомства и диалоги в одном месте.' },
   analytics: { title: 'Аналитика продаж', description: 'Смотрите, как диалоги превращаются в сделки.' },
-  integrations: { title: 'Всё связано', description: 'Меньше рутины. Больше живого общения.' },
 };
 export const isActive = (lead: Pick<Lead, 'stage'>) => lead.stage !== 'won' && lead.stage !== 'lost';
 export const dateKey = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 export function dayOffset(days: number) {
   const date = new Date(); date.setDate(date.getDate() + days); return dateKey(date);
 }
-export const money = (amount: number) => new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(amount) + ' ₽';
+export const money = (amount: number) => new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(amount) + ' $';
 export const shortDate = (value: string) => value ? new Date(value + 'T12:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', '') : 'Без даты';
 export const sourceLabel = (source: Lead['source']) => ({ manual: 'Вручную', manychat: 'ManyChat', instagram: 'Instagram' })[source];
 export function dueInfo(lead: Lead) {
@@ -74,7 +74,9 @@ export function getStats(leads: Lead[]) {
   };
 }
 export function prepareLead(fields: LeadFields, previous?: Lead): Lead {
-  const clean = leadFieldsSchema.parse(fields);
+  const clean = !fields.handle && previous?.instagram
+    ? { ...leadFieldsSchema.omit({ handle: true }).parse(fields), handle: '' }
+    : leadFieldsSchema.parse(fields);
   if (clean.stage === 'lost' && !clean.lostReason.trim()) throw new Error('Укажите причину отказа');
   if (clean.due && !clean.nextAction) throw new Error('Укажите действие для выбранной даты');
   if (!isActive(clean)) { clean.nextAction = ''; clean.due = ''; }
@@ -89,7 +91,7 @@ export function prepareLead(fields: LeadFields, previous?: Lead): Lead {
   if (previous && (previous.nextAction !== clean.nextAction || previous.due !== clean.due)) {
     history.push({ at: now, kind: 'task', text: clean.nextAction ? `Следующий шаг: ${clean.nextAction}` : 'Задача завершена' });
   }
-  return { ...clean, id: previous?.id ?? crypto.randomUUID(), created: previous?.created ?? now, updated: now, color: previous?.color ?? Math.floor(Math.random() * 6), history };
+  return { ...clean, ...(previous?.instagram ? { instagram: previous.instagram } : {}), id: previous?.id ?? crypto.randomUUID(), created: previous?.created ?? now, updated: now, color: previous?.color ?? Math.floor(Math.random() * 6), history };
 }
 export type Filters = { query: string; source: string; period: string; attention: boolean; hot: boolean; stage: string };
 export const EMPTY_FILTERS: Filters = { query: '', source: 'all', period: 'all', attention: false, hot: false, stage: 'all' };

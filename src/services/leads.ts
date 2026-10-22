@@ -35,7 +35,7 @@ export class LocalLeadsRepository implements LeadsRepository {
   async save(lead: Lead) {
     const validated = leadSchema.parse(lead);
     const leads = this.read();
-    if (leads.some(item => item.handle === validated.handle && item.id !== validated.id)) throw new Error('Контакт с таким Instagram-ником уже есть в базе');
+    if (validated.handle && leads.some(item => item.handle === validated.handle && item.id !== validated.id)) throw new Error('Контакт с таким Instagram-ником уже есть в базе');
     const exists = leads.some(item => item.id === validated.id);
     this.write(exists ? leads.map(item => item.id === validated.id ? validated : item) : [validated, ...leads]);
     return validated;

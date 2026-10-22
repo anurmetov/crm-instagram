@@ -7,8 +7,8 @@ export function csvCell(value: unknown) {
   return '"' + text.replaceAll('"', '""') + '"';
 }
 export function createCsv(leads: Lead[]) {
-  const rows = [['Имя', 'Instagram', 'Этап', 'Сумма', 'Источник', 'Продукт', 'Следующее действие', 'Дата', 'Заметки'],
-    ...leads.map(lead => [lead.name, '@' + lead.handle, stageById[lead.stage].name, lead.amount, sourceLabel(lead.source), lead.product, lead.nextAction, lead.due, lead.note])];
+  const rows = [['Имя', 'Instagram', 'Этап', 'Сумма, USD', 'Источник', 'Продукт', 'Следующее действие', 'Дата', 'Заметки'],
+    ...leads.map(lead => [lead.name, lead.handle ? '@' + lead.handle : '', stageById[lead.stage].name, lead.amount, sourceLabel(lead.source), lead.product, lead.nextAction, lead.due, lead.note])];
   return '\uFEFF' + rows.map(row => row.map(csvCell).join(';')).join('\r\n');
 }
 export function exportLeads(leads: Lead[]) {
