@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { createDemoLeads } from '../src/data/seed';
 import { EMPTY_FILTERS, dateKey, dayOffset, dueInfo, filterLeads, getStats, leadsSchema, prepareLead } from '../src/lib/domain';
-import { createCsv, csvCell } from '../src/lib/export';
 
 describe('CRM rules', () => {
-  it('preserves the original 20 contacts and sales totals', () => {
+  it('starts with 20 demo contacts and sales totals in euros', () => {
     const leads = leadsSchema.parse(createDemoLeads());
-    expect(getStats(leads)).toMatchObject({ total: 20, active: 15, won: 3, revenue: 78000, potential: 365000, conversion: 15 });
+    expect(getStats(leads)).toMatchObject({ total: 20, active: 15, won: 3, revenue: 630, potential: 2950, conversion: 15 });
   });
   it('normalizes handles and records stage changes without changing identity', () => {
     const lead = createDemoLeads()[0];
@@ -38,17 +37,5 @@ describe('CRM rules', () => {
     expect(dueInfo({ ...lead, due: '' }).kind).toBe('neutral');
     expect(dueInfo({ ...lead, due: dayOffset(-1) }).kind).toBe('overdue');
     expect(dueInfo(lead).kind).toBe('today');
-  });
-});
-describe('CSV export', () => {
-  it('escapes quotes and prevents spreadsheet formula injection, including leading whitespace', () => {
-    expect(csvCell('"имя"')).toBe('"""имя"""');
-    expect(csvCell(' =HYPERLINK("bad")')).toBe('"\' =HYPERLINK(""bad"")"');
-    expect(csvCell('@handle')).toBe('"\'@handle"');
-  });
-  it('exports only supplied rows with UTF-8 BOM and portable line breaks', () => {
-    const csv = createCsv(createDemoLeads().slice(0, 1));
-    expect(csv.startsWith('\uFEFF')).toBe(true); expect(csv.split('\r\n')).toHaveLength(2);
-    expect(csv).toContain('Алина Смирнова'); expect(csv).not.toContain('Мария Волкова');
   });
 });

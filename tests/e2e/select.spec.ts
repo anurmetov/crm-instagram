@@ -51,7 +51,7 @@ test('keyboard navigation, typeahead, Escape and Tab keep the editor usable', as
   await stage.press('Enter');
   await stage.press('Tab');
   await expect(stage).toHaveAttribute('aria-expanded', 'false');
-  await expect(dialog.getByRole('spinbutton', { name: 'Сумма, $' })).toBeFocused();
+  await expect(dialog.getByRole('spinbutton', { name: 'Сумма, €' })).toBeFocused();
 });
 
 test('menus fit the viewport, dismiss outside and adapt between desktop and phone', async ({ page, isMobile }) => {

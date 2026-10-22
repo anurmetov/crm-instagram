@@ -74,14 +74,6 @@ test('moves a deal with drag and drop or the mobile next-step button', async ({ 
   }
 });
 
-test('filtered contacts download as CSV', async ({ page }) => {
-  await page.goto('/#leads');
-  await page.getByRole('searchbox').fill('alina.smm');
-  await expect(page.locator('.lead-card').filter({ visible: true })).toHaveCount(1);
-  const download = page.waitForEvent('download'); await page.getByRole('button', { name: 'Экспорт контактов в CSV', exact: true }).click();
-  expect((await download).suggestedFilename()).toMatch(/^potok-.*\.csv$/);
-});
-
 test('all sections fit narrow phones, tablets and desktop without page overflow', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   for (const width of [320, 390, 768, 1024, 1440]) {

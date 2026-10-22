@@ -50,7 +50,7 @@ export const dateKey = (date = new Date()) => `${date.getFullYear()}-${String(da
 export function dayOffset(days: number) {
   const date = new Date(); date.setDate(date.getDate() + days); return dateKey(date);
 }
-export const money = (amount: number) => new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(amount) + ' $';
+export const money = (amount: number) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(amount);
 export const shortDate = (value: string) => value ? new Date(value + 'T12:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', '') : 'Без даты';
 export const sourceLabel = (source: Lead['source']) => ({ manual: 'Вручную', manychat: 'ManyChat', instagram: 'Instagram' })[source];
 export function dueInfo(lead: Lead) {

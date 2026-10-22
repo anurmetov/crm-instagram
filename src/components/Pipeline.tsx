@@ -1,4 +1,4 @@
-import { ArrowDownWideNarrow, ArrowRight, Download, Flame, GripVertical, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
+import { ArrowDownWideNarrow, ArrowRight, Flame, GripVertical, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { EMPTY_FILTERS, STAGES, filterLeads, isActive, money, stageById } from '../lib/domain';
@@ -10,7 +10,7 @@ import { periodOptions, sortOptions, sourceFilterOptions, stageOptions } from '.
 type Props = {
   leads: Lead[]; page: Page; onOpen: (lead?: Lead, stage?: StageId) => void;
   onMove: (lead: Lead, stage: StageId) => Promise<void>;
-  onExport: (leads: Lead[]) => void; onError: (message: string) => void;
+  onError: (message: string) => void;
 };
 type Sort = 'recent' | 'name' | 'amount';
 function LeadCard({ lead, onOpen, onMove, onError }: { lead: Lead; onOpen: Props['onOpen']; onMove: Props['onMove']; onError: Props['onError'] }) {
@@ -29,7 +29,7 @@ function LeadCard({ lead, onOpen, onMove, onError }: { lead: Lead; onOpen: Props
   </article>;
 }
 
-export function Pipeline({ leads, page, onOpen, onMove, onExport, onError }: Props) {
+export function Pipeline({ leads, page, onOpen, onMove, onError }: Props) {
   const [filters, setFilters] = useState<Filters>({ ...EMPTY_FILTERS });
   const [filterOpen, setFilterOpen] = useState(false), [sort, setSort] = useState<Sort>('recent');
   const [dragOver, setDragOver] = useState<StageId | null>(null);
@@ -48,7 +48,6 @@ export function Pipeline({ leads, page, onOpen, onMove, onExport, onError }: Pro
   return <>
     <section className="pipeline-panel" aria-label={page === 'leads' ? 'База контактов' : 'Воронка лидов'}>
       <header className="pipeline-header"><div><span className="section-overline">ВАШИ ДИАЛОГИ В ДВИЖЕНИИ</span><h2>{page === 'leads' ? 'База контактов' : 'От диалога к сделке'}<span className="count-pill">{data.length}</span></h2><p>{page === 'leads' ? 'Все люди, с которыми вы на связи' : 'Все ваши сделки на одной доске'}</p></div>
-        <button className="icon-btn contacts-export" aria-label="Экспорт контактов в CSV" title="Скачать контакты" onClick={() => onExport(data)} disabled={!data.length}><Download size={18} /></button>
       </header>
       <div className="pipeline-controls"><div className="pipeline-toolbar"><label className="search-box"><Search size={17} /><input ref={search} type="search" value={filters.query} onChange={event => updateFilter('query', event.target.value)} placeholder="Найти человека…" aria-label="Поиск контактов" />{filters.query ? <button aria-label="Очистить поиск" onClick={() => updateFilter('query', '')}><X size={14} /></button> : <kbd>⌘ K</kbd>}</label>
         <div className="desktop-filters"><Select className="select-pill" label="Источник контакта" value={filters.source} options={sourceFilterOptions} onValueChange={value => updateFilter('source', value)} /></div>

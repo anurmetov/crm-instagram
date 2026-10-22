@@ -1,4 +1,4 @@
-import { ArrowUpRight, CircleDollarSign, Target, Users } from 'lucide-react';
+import { ArrowUpRight, Euro, Target, Users } from 'lucide-react';
 import { STAGES, getStats, isActive, money, sourceLabel } from '../lib/domain';
 import type { Lead } from '../lib/domain';
 
@@ -9,7 +9,7 @@ export function Analytics({ leads }: { leads: Lead[] }) {
   const events = leads.flatMap(lead => lead.history.map(event => ({ lead, event }))).sort((a, b) => b.event.at.localeCompare(a.event.at)).slice(0, 5);
   const reasons = Object.entries(lost.reduce<Record<string, number>>((result, lead) => { const reason = lead.lostReason || 'Не указана'; result[reason] = (result[reason] || 0) + 1; return result; }, {}));
   return <div className="analytics-page"><div className="analytics-metrics">{[
-    { icon: CircleDollarSign, label: 'Выручка', value: money(stats.revenue), note: `${stats.won} успешных сделок` },
+    { icon: Euro, label: 'Выручка', value: money(stats.revenue), note: `${stats.won} успешных сделок` },
     { icon: Users, label: 'В работе', value: String(stats.active), note: `${money(stats.potential)} — потенциал` },
     { icon: Target, label: 'Конверсия', value: stats.conversion + '%', note: 'Из всех контактов в оплату' },
   ].map(item => <article className="analytic-stat" key={item.label}><span><item.icon size={19} />{item.label}</span><strong>{item.value}</strong><small>{item.note}</small></article>)}</div>

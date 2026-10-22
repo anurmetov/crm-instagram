@@ -6,7 +6,6 @@ import { LeadEditor } from './components/LeadEditor';
 import { Analytics } from './components/Analytics';
 import { Dialog } from './components/ui';
 import { useCrm } from './hooks/useCrm';
-import { exportLeads } from './lib/export';
 import { PAGE_META, prepareLead, stageById } from './lib/domain';
 import type { Lead, Page, StageId } from './lib/domain';
 
@@ -45,7 +44,6 @@ export function App() {
   }, []);
   const navigate = (next: Page) => { window.location.hash = next; };
   const openLead = (lead?: Lead, stage?: StageId) => setEditor({ lead, stage });
-  const exportContacts = (data = leads) => { exportLeads(data); notify(`Экспортировано контактов: ${data.length}`); };
   async function moveLead(lead: Lead, stage: StageId) {
     if (stage === lead.stage) return;
     if (stage === 'lost') { openLead(lead, stage); return; }
@@ -57,13 +55,13 @@ export function App() {
     {!online && <div className="offline-banner" role="status"><WifiOff size={15} />Вы не в сети. Можно продолжать работу до перезагрузки страницы.</div>}
     <main id="main-content" className={`main-content page-${page}`} tabIndex={-1}><header className="page-header"><div><div className="eyebrow"><i />ЛИЧНЫЙ БЛОГ<span>·</span>INSTAGRAM CRM</div><h1>{PAGE_META[page].title}<span className="title-dot">.</span></h1><p>{PAGE_META[page].description}</p></div><div className="header-actions"><button className="btn primary new-lead-button" onClick={() => openLead()}><Plus size={15} /><span>Новый лид</span></button><span className="date-pill">{new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'Europe/Berlin' })}</span><button ref={mobileAddRef} className="mobile-add icon-btn" onClick={() => openLead()} aria-label="Добавить контакт"><Plus size={22} /></button></div></header>
       {page === 'overview' && <Metrics leads={leads} navigate={navigate} onOpen={openLead} />}
-      {(page === 'pipeline' || page === 'leads') && <Pipeline key={page} page={page} leads={leads} onOpen={openLead} onMove={moveLead} onExport={exportContacts} onError={message => notify(message, true)} />}
+      {(page === 'pipeline' || page === 'leads') && <Pipeline key={page} page={page} leads={leads} onOpen={openLead} onMove={moveLead} onError={message => notify(message, true)} />}
       {page === 'analytics' && <Analytics leads={leads} />}
     <footer className="page-footer"><span><LockKeyhole size={11} />Демоданные · изменения до перезагрузки</span><span>С заботой о каждом диалоге<span className="footer-brand">поток.</span></span></footer></main></div>
   </div><nav className="bottom-nav" aria-label="Мобильная навигация">{navigation.map(item => <a href={`#${item.id}`} key={item.id} aria-current={page === item.id ? 'page' : undefined} className={page === item.id ? 'active' : ''}><span><item.icon size={21} /></span><small>{item.label}</small></a>)}</nav>
   <button className={`mobile-fab ${showQuickAdd ? 'visible' : ''}`} onClick={() => openLead()} aria-label="Быстро добавить контакт"><Plus size={24} /></button>
   {editor && <LeadEditor lead={editor.lead} stage={editor.stage} onClose={() => setEditor(null)} onSave={save} onDelete={remove} notify={message => notify(message)} />}
-  {help && <Dialog title="Всё начинается с диалога" subtitle="ДОБРО ПОЖАЛОВАТЬ В ПОТОК" onClose={() => setHelp(false)} className="help-dialog"><div className="dialog-body"><p className="panel-description">Демоверсия CRM для ваших контактов и сделок. Изменения действуют до перезагрузки страницы, затем вернутся исходные примеры. Контакты добавляются вручную.</p>{[['Собирайте людей', 'Добавляйте контакты кнопкой «Новый лид». Один Instagram-ник — одна карточка.'], ['Двигайте сделки', 'На компьютере перетаскивайте карточки. На телефоне используйте кнопку следующего этапа или меняйте этап в карточке.'], ['Забирайте данные с собой', 'Скачайте найденные контакты кнопкой экспорта в заголовке списка для Excel и Google Таблиц, чтобы сохранить результат перед перезагрузкой.']].map(([title, text], index) => <div className="help-step" key={title}><span>0{index + 1}</span><div><h3>{title}</h3><p>{text}</p></div></div>)}</div><div className="dialog-actions"><button className="btn primary" onClick={() => setHelp(false)}>Начнём<ArrowRight size={16} /></button></div></Dialog>}
+  {help && <Dialog title="Всё начинается с диалога" subtitle="ДОБРО ПОЖАЛОВАТЬ В ПОТОК" onClose={() => setHelp(false)} className="help-dialog"><div className="dialog-body"><p className="panel-description">Демоверсия CRM для ваших контактов и сделок. Изменения действуют до перезагрузки страницы, затем вернутся исходные примеры. Контакты добавляются вручную.</p>{[['Собирайте людей', 'Добавляйте контакты кнопкой «Новый лид». Один Instagram-ник — одна карточка.'], ['Двигайте сделки', 'На компьютере перетаскивайте карточки. На телефоне используйте кнопку следующего этапа или меняйте этап в карточке.']].map(([title, text], index) => <div className="help-step" key={title}><span>0{index + 1}</span><div><h3>{title}</h3><p>{text}</p></div></div>)}</div><div className="dialog-actions"><button className="btn primary" onClick={() => setHelp(false)}>Начнём<ArrowRight size={16} /></button></div></Dialog>}
   <div className="toast-stack" aria-live="polite" aria-atomic="false">{toasts.map(toast => <div className={`toast ${toast.error ? 'error' : ''}`} key={toast.id} role={toast.error ? 'alert' : 'status'}>{toast.error ? <CircleHelp size={17} /> : <Check size={17} />}<span>{toast.text}</span><button className="toast-close" aria-label="Скрыть уведомление" onClick={() => setToasts(current => current.filter(item => item.id !== toast.id))}><X size={14} /></button></div>)}</div>
   </>;
 }

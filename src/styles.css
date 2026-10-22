@@ -118,7 +118,6 @@ h1 { font-size: clamp(28px, 2.5vw, 38px); font-weight: 500; line-height: 1.3; le
 .progress-track.lime > i { background: #cbe894; }
 .pipeline-panel { background: white; border-radius: var(--radius); overflow: hidden; }
 .pipeline-header { padding: 23px 23px 0; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
-.contacts-export { width: 44px; height: 44px; }
 .section-overline { font-size: 7px; font-weight: 650; letter-spacing: 1.6px; color: #b3a1bd; display: block; margin-bottom: 5px; }
 .pipeline-header h2 { display: flex; align-items: center; gap: 9px; font-size: 17px; letter-spacing: -.5px; font-weight: 550; }
 .count-pill { font-size: 10px; font-weight: 550; padding: 2px 7px; border-radius: 7px; background: #f0edf6; color: #9a87ac; letter-spacing: 0; }

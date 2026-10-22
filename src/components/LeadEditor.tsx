@@ -45,7 +45,7 @@ export function LeadEditor({ lead, stage, onClose, onSave, onDelete, notify }: {
         <label className="field full">Продукт или услуга<input name="product" placeholder="Например, личное сопровождение" defaultValue={lead?.product ?? ''} maxLength={120} /></label></div>
         <div className="form-section-title"><span>02</span>О сделке</div>
         <div className="form-grid"><div className="field full"><span>Этап сделки</span><Select label="Этап сделки" name="stage" value={selectedStage} options={stageOptions} onValueChange={value => { setSelectedStage(value as StageId); markDirty(); }} /></div>
-        <label className="field">Сумма, $<input name="amount" type="number" min="0" max="100000000" step="1" inputMode="numeric" defaultValue={lead?.amount ?? 25000} required /></label>
+        <label className="field">Сумма, €<input name="amount" type="number" min="0" max="100000000" step="1" inputMode="numeric" defaultValue={lead?.amount ?? 200} required /></label>
         <div className="field"><span>Источник</span><Select label="Источник" name="source" defaultValue={lead?.source ?? 'manual'} options={sourceOptions} onValueChange={markDirty} /></div>
         {selectedStage === 'lost' && <label className="field full">Причина отказа<input name="lostReason" placeholder="Что помешало сделке?" defaultValue={lead?.lostReason ?? ''} required maxLength={160} /></label>}</div>
         <label className="field notes-field">Заметки<textarea name="note" rows={3} placeholder="Что важно помнить о человеке?" defaultValue={lead?.note ?? ''} maxLength={2000} /></label>

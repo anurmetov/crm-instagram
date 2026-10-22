@@ -29,7 +29,7 @@ test('edits and deletes offline without browser storage or API, then restores th
   await expect(dialog).not.toBeVisible();
   await page.locator('a[href="#overview"]').filter({ visible: true }).first().click();
   await expect(page.locator('.metric-big')).toHaveText('14');
-  await expect(page.locator('.won-metric')).toContainText(/103\s000/);
+  await expect(page.locator('.won-metric')).toContainText(/830\s€/);
 
   await page.locator('a[href="#leads"]').filter({ visible: true }).first().click();
   await page.getByRole('searchbox').fill('alina.smm');
@@ -41,7 +41,7 @@ test('edits and deletes offline without browser storage or API, then restores th
   await expect(page.getByRole('heading', { name: 'Никого не нашли' })).toBeVisible();
   await page.locator('a[href="#overview"]').filter({ visible: true }).first().click();
   await expect(page.locator('.leads-metric')).toContainText('19 контактов');
-  await expect(page.locator('.won-metric')).toContainText(/78\s000/);
+  await expect(page.locator('.won-metric')).toContainText(/630\s€/);
 
   await context.setOffline(false);
   await page.reload();
