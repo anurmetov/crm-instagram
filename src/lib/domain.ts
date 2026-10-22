@@ -39,10 +39,10 @@ export const leadsSchema = z.array(leadSchema);
 export type Lead = z.infer<typeof leadSchema>;
 export type LeadFields = z.infer<typeof leadFieldsSchema>;
 export type Page = 'pipeline' | 'leads' | 'analytics' | 'overview';
-export const PAGE_META: Record<Page, { title: string; description: string }> = {
-  pipeline: { title: 'Воронка продаж', description: 'От первого «привет» до первой оплаты.' },
-  leads: { title: 'Все контакты', description: 'Все ваши знакомства и диалоги в одном месте.' },
-  analytics: { title: 'Аналитика продаж', description: 'Смотрите, как диалоги превращаются в сделки.' },
+export const PAGE_META: Record<Page, { title: string; description?: string }> = {
+  pipeline: { title: 'Воронка продаж' },
+  leads: { title: 'Все контакты' },
+  analytics: { title: 'Аналитика продаж' },
   overview: { title: 'Привет, Адам', description: 'Ваши лиды, успешные сделки и продажи — всё перед глазами.' },
 };
 export const isActive = (lead: Pick<Lead, 'stage'>) => lead.stage !== 'won' && lead.stage !== 'lost';

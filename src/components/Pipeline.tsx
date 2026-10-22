@@ -30,6 +30,7 @@ function LeadCard({ lead, onOpen, onMove, onError }: { lead: Lead; onOpen: Props
 }
 
 export function Pipeline({ leads, page, onOpen, onMove, onError }: Props) {
+  const canAdd = page === 'pipeline';
   const [filters, setFilters] = useState<Filters>({ ...EMPTY_FILTERS });
   const [filterOpen, setFilterOpen] = useState(false), [sort, setSort] = useState<Sort>('recent');
   const [dragOver, setDragOver] = useState<StageId | null>(null);
@@ -62,13 +63,13 @@ export function Pipeline({ leads, page, onOpen, onMove, onError }: Props) {
           return <section className={`kanban-column ${dragOver === stage.id ? 'drag-over' : ''}`} key={stage.id} style={{ '--stage-color': stage.color } as CSSProperties}
             onDragOver={event => { event.preventDefault(); event.dataTransfer.dropEffect = 'move'; setDragOver(stage.id); }} onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragOver(null); }}
             onDrop={event => { event.preventDefault(); setDragOver(null); const lead = leads.find(lead => lead.id === event.dataTransfer.getData('text/potok-lead')); if (lead && lead.stage !== stage.id) void onMove(lead, stage.id).catch(error => onError(error.message)); }}>
-            <div className="column-header"><i /><h3>{stage.name}</h3><span>{group.length}</span><button aria-label={`Добавить контакт в ${stage.name}`} onClick={() => onOpen(undefined, stage.id)}><Plus size={14} /></button></div><div className="column-meta"><span>0{STAGES.indexOf(stage) + 1}</span></div>
-            <div className="column-cards">{group.map(lead => <LeadCard key={lead.id} lead={lead} onOpen={onOpen} onMove={onMove} onError={onError} />)}{!group.length && <div className="empty-column">Следующая история<br />начнётся здесь</div>}</div><button className="column-add" onClick={() => onOpen(undefined, stage.id)}><Plus size={13} />Добавить лида</button>
+            <div className="column-header"><i /><h3>{stage.name}</h3><span>{group.length}</span>{canAdd && <button aria-label={`Добавить контакт в ${stage.name}`} onClick={() => onOpen(undefined, stage.id)}><Plus size={14} /></button>}</div><div className="column-meta"><span>0{STAGES.indexOf(stage) + 1}</span></div>
+            <div className="column-cards">{group.map(lead => <LeadCard key={lead.id} lead={lead} onOpen={onOpen} onMove={onMove} onError={onError} />)}{!group.length && <div className="empty-column">Следующая история<br />начнётся здесь</div>}</div>{canAdd && <button className="column-add" onClick={() => onOpen(undefined, stage.id)}><Plus size={13} />Добавить лида</button>}
           </section>;
         })}</div>
-        <div className="mobile-card-list"><div className="mobile-list-caption"><span>{filters.stage === 'all' ? 'Все ваши контакты' : stageById[filters.stage as StageId].name}</span><span>{data.length} контактов</span></div>{data.map(lead => <LeadCard key={lead.id} lead={lead} onOpen={onOpen} onMove={onMove} onError={onError} />)}<button className="mobile-list-add" onClick={() => onOpen(undefined, filters.stage === 'all' ? undefined : filters.stage as StageId)}><Plus size={18} />Новый контакт</button></div>
+        <div className="mobile-card-list"><div className="mobile-list-caption"><span>{filters.stage === 'all' ? 'Все ваши контакты' : stageById[filters.stage as StageId].name}</span><span>{data.length} контактов</span></div>{data.map(lead => <LeadCard key={lead.id} lead={lead} onOpen={onOpen} onMove={onMove} onError={onError} />)}{canAdd && <button className="mobile-list-add" onClick={() => onOpen(undefined, filters.stage === 'all' ? undefined : filters.stage as StageId)}><Plus size={18} />Новый контакт</button>}</div>
       </>}
-      <footer className="board-footer"><span><GripVertical size={12} />Перетаскивайте карточки между этапами</span><span><i />Изменения до перезагрузки</span></footer>
+      <footer className="board-footer"><span><GripVertical size={12} />Перетаскивайте карточки между этапами</span></footer>
     </section>
     {filterOpen && <FilterDialog filters={filters} setFilters={setFilters} sort={sort} setSort={setSort} count={data.length} onClose={() => setFilterOpen(false)} />}
   </>;

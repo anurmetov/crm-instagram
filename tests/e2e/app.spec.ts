@@ -93,7 +93,12 @@ test('screenshots', async ({ page, isMobile }) => {
   await page.screenshot({ path: `.preview/${isMobile ? 'mobile' : 'desktop'}-pipeline.png`, fullPage: !isMobile, animations: 'disabled', scale: 'css' });
   await page.goto('/#leads'); await page.getByRole('searchbox').fill('али');
   await page.screenshot({ path: `.preview/${isMobile ? 'mobile' : 'desktop'}-contacts.png`, fullPage: false, animations: 'disabled', scale: 'css' });
+  for (const section of ['overview', 'analytics']) {
+    await page.goto('/#' + section);
+    await page.screenshot({ path: `.preview/${isMobile ? 'mobile' : 'desktop'}-${section}.png`, fullPage: true, animations: 'disabled', scale: 'css' });
+  }
   if (isMobile) {
+    await page.goto('/#pipeline');
     await page.getByRole('button', { name: 'Добавить контакт', exact: true }).click();
     await page.screenshot({ path: '.preview/mobile-editor.png', fullPage: false, animations: 'disabled', scale: 'css' });
   }
