@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { EMPTY_FILTERS, STAGES, filterLeads, isActive, money, stageById } from '../lib/domain';
 import type { Filters, Lead, Page, StageId } from '../lib/domain';
-import { dataMode } from '../services/leads';
 import { Avatar, Dialog, EmptyState, SourceBadge, StageBadge } from './ui';
 import { Select } from './Select';
 import { periodOptions, sortOptions, sourceFilterOptions, stageOptions } from './selectionOptions';
@@ -70,7 +69,7 @@ export function Pipeline({ leads, page, onOpen, onMove, onExport, onError }: Pro
         })}</div>
         <div className="mobile-card-list"><div className="mobile-list-caption"><span>{filters.stage === 'all' ? 'Все ваши контакты' : stageById[filters.stage as StageId].name}</span><span>{data.length} контактов</span></div>{data.map(lead => <LeadCard key={lead.id} lead={lead} onOpen={onOpen} onMove={onMove} onError={onError} />)}<button className="mobile-list-add" onClick={() => onOpen(undefined, filters.stage === 'all' ? undefined : filters.stage as StageId)}><Plus size={18} />Новый контакт</button></div>
       </>}
-      <footer className="board-footer"><span><GripVertical size={12} />Перетаскивайте карточки между этапами</span><span><i />{dataMode === 'demo' ? 'Сохранено в этом браузере' : 'Подключено к серверу'}</span></footer>
+      <footer className="board-footer"><span><GripVertical size={12} />Перетаскивайте карточки между этапами</span><span><i />Изменения до перезагрузки</span></footer>
     </section>
     {filterOpen && <FilterDialog filters={filters} setFilters={setFilters} sort={sort} setSort={setSort} count={data.length} onClose={() => setFilterOpen(false)} />}
   </>;

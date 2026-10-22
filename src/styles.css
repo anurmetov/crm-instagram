@@ -47,28 +47,8 @@ h1, h2, h3, p { margin: 0; }
 .workspace-name { font-size: 10px; display: flex; align-items: center; gap: 7px; color: #7c728c; white-space: nowrap; }
 .workspace-dot { width: 6px; height: 6px; border-radius: 2px; background: #b2a5ca; }
 .topbar-right { display: flex; align-items: center; gap: 14px; margin-left: auto; }
-.instagram-trigger { display: inline-flex; align-items: center; gap: 7px; border-radius: 20px; padding: 8px 10px; color: var(--purple-dark); background: var(--purple-soft); font-size: 10px; }
-.instagram-trigger:hover { background: #e3ddec; }
-.instagram-body { display: flex; flex-direction: column; gap: 20px; }
-.instagram-intro { display: flex; align-items: flex-start; gap: 12px; color: var(--purple-dark); }
-.instagram-intro p { color: var(--muted); }
-.instagram-state { padding: 14px 16px; border-radius: 14px; background: var(--purple-soft); }
-.instagram-state.connected { background: #edf4df; }
-.instagram-state b, .instagram-state span { display: block; }
-.instagram-state span { margin-top: 3px; color: var(--muted); font-size: 11px; }
-.instagram-settings, .instagram-callbacks, .instagram-check { display: flex; flex-direction: column; gap: 12px; }
-.instagram-body h3 { font-size: 14px; font-weight: 600; }
-.instagram-check { padding: 14px 16px; background: #f7f6fa; border-radius: 14px; }
-.instagram-check p { font-size: 11px; color: var(--muted); }
-.instagram-body .panel-description, .instagram-body .field, .instagram-body .form-error { margin: 0; }
-.instagram-body .panel-description a { text-decoration: underline; }
-.instagram-copy { display: flex; gap: 6px; align-items: center; }
-.instagram-copy input { flex: 1; width: 0; font-size: 11px; }
-.instagram-actions { flex-wrap: wrap; }
-@media (max-width: 600px) { .instagram-trigger span { display: none; } .instagram-actions .btn { flex: 1; } }
 .mode-indicator { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #91849b; }
 .mode-indicator i { width: 5px; height: 5px; border-radius: 50%; background: #aea0c5; }
-.mode-indicator.api i { background: #84a762; }
 .icon-btn { width: 36px; height: 36px; background: #efedf4; color: #908399; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .icon-btn:hover { background: #e5dfed; color: #75608a; }
 .main-content { padding: 26px 30px 22px 6px; min-height: calc(100dvh - 91px); }
@@ -80,6 +60,7 @@ h1, h2, h3, p { margin: 0; }
 h1 { font-size: clamp(28px, 2.5vw, 38px); font-weight: 500; line-height: 1.3; letter-spacing: -1.6px; margin-top: 6px; }
 .title-dot { color: var(--purple); }
 .page-header p { font-size: 11px; color: #918699; margin-top: 7px; }
+.page-overview h1 { font-size: clamp(34px, 3.5vw, 52px); }
 .header-actions { display: flex; align-items: center; gap: 9px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; min-height: 38px; border-radius: 24px; background: #eeebf4; padding: 10px 16px; font-size: 11px; font-weight: 550; white-space: nowrap; }
 .btn:hover { background: #e3ddec; }
@@ -363,25 +344,26 @@ h1 { font-size: clamp(28px, 2.5vw, 38px); font-weight: 500; line-height: 1.3; le
   .mobile-add { display: flex; background: var(--purple); color: white; width: 43px; height: 43px; border-radius: 15px; box-shadow: 0 4px 12px #9e8fbb1f; }
   .mobile-add:hover { background: var(--purple-dark); color: white; }
   .title-dot { margin-left: 1px; }
-  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 23px; }
-  .metric-card { border-radius: 20px; min-height: 107px; padding: 14px 16px; }
-  .metric-heading h2 { font-size: 11px; color: #8e799e; font-weight: 500; }
-  .metric-heading .round-arrow { display: none; }
+  .metrics { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-bottom: 23px; }
+  .metric-card { border-radius: 20px; min-height: 0; padding: 20px; }
+  .metric-heading h2 { font-size: 15px; color: #8e799e; font-weight: 500; }
+  .metric-heading .round-arrow { width: 44px; height: 44px; }
   .metric-value-row { position: relative; gap: 11px; margin-top: 8px; }
-  .metric-big { font-size: 44px; letter-spacing: -3px; line-height: 1.1; }
-  .metric-detail { font-size: 7px; padding-top: 7px; line-height: 1.8; color: #9580a3; }
+  .metric-big { font-size: 56px; letter-spacing: -3px; line-height: 1.1; }
+  .metric-detail { font-size: 10px; padding-top: 7px; line-height: 1.8; color: #9580a3; }
   .mobile-metric-tag { display: none; align-items: center; gap: 4px; font-size: 6px; color: #8da267; margin-left: auto; padding: 5px 6px; background: #edf6da; border-radius: 20px; }
   .mobile-metric-tag > span { width: 3px; height: 3px; background: #9db16d; border-radius: 50%; }
-  .chart-caption { display: none; margin-top: 14px; font-size: 8px; }
+  .chart-caption { margin-top: 14px; font-size: 9px; }
   .chart-caption > span { font-size: 6px; }
-  .mini-chart { display: none; height: 59px; margin-top: 11px; gap: 14px; }
+  .mini-chart { height: 75px; margin-top: 11px; gap: 14px; }
   .chart-bars { height: 45px; gap: 5px; background: repeating-linear-gradient(to top, transparent 0, transparent 18px, #f5f2f8 18px, #f5f2f8 19px); }
   .chart-bars > i { max-width: none; width: 35%; border-radius: 3px 3px 1px 1px; }
   .chart-column small { font-size: 6px; margin-top: 3px; }
   .mobile-metric-footer { display: none; align-items: center; gap: 7px; margin-top: 17px; padding: 14px 0; border-top: 1px solid #f1edf5; font-size: 9px; color: #a08bad; }
   .mobile-metric-footer b { margin-left: auto; color: #867092; font-size: 12px; font-weight: 600; }
   .mobile-metric-footer > svg { color: #b09bc0; }
-  .won-metric, .sales-metric { display: none; }
+  .mini-table-head, .mini-deal { grid-template-columns: minmax(0, 1fr) 65px 60px; gap: 6px; }
+  .mini-deal { min-height: 48px; }
   .mobile-sales-card { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; border: 1px solid #e8e1f0; border-radius: 20px; padding: 12px 16px; text-align: left; background: #eee9f6; }
   .mobile-sales-icon { display: none; place-items: center; height: 37px; width: 37px; background: #f8f5fc; color: #a28ab7; border-radius: 12px; }
   .mobile-sales-card > span:nth-child(2) { display: flex; flex-direction: column; }
@@ -545,6 +527,7 @@ h1 { font-size: clamp(28px, 2.5vw, 38px); font-weight: 500; line-height: 1.3; le
   .mobile-card-list { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
   .mobile-list-caption, .mobile-list-add { grid-column: 1 / -1; }
   .metrics { grid-template-columns: 1.2fr 1fr; }
+  .sales-metric { grid-column: 1 / -1; }
   .metric-detail { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }

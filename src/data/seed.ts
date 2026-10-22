@@ -1,4 +1,4 @@
-import { STAGES, dayOffset } from '../lib/domain';
+import { STAGES, dayOffset } from '../lib/domain.ts';
 import type { Lead, StageId } from '../lib/domain';
 
 type SeedRow = [string, string, StageId, number, Lead['source'], string, string, string, number | null, Lead['priority'], number];

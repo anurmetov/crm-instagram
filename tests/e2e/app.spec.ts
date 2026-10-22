@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => { await page.goto('/'); await expect(page.getByRole('heading', { name: 'От диалога к сделке' })).toBeVisible(); });
+test.beforeEach(async ({ page }) => { await page.goto('/#pipeline'); await expect(page.getByRole('heading', { name: 'От диалога к сделке' })).toBeVisible(); });
 
-test('creates, edits and retains a contact after reload', async ({ page, isMobile }) => {
+test('creates and edits a contact, keeps it across sections and resets after reload', async ({ page, isMobile }) => {
   await page.getByRole('button', { name: isMobile ? 'Добавить контакт' : 'Новый лид', exact: true }).click();
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('textbox', { name: 'Имя', exact: true }).fill('Тестовый контакт');
@@ -15,9 +15,17 @@ test('creates, edits and retains a contact after reload', async ({ page, isMobil
   await page.getByRole('option', { name: 'Переписка', exact: true }).click();
   await dialog.getByRole('textbox', { name: 'Заметки', exact: true }).fill('Важный контекст');
   await dialog.getByRole('button', { name: 'Сохранить изменения' }).click();
-  await page.reload();
+  await expect(dialog).not.toBeVisible();
+  await page.locator('a[href="#overview"]').filter({ visible: true }).first().click();
+  await expect(page.locator('.leads-metric')).toContainText('21 контактов');
+  await page.locator('a[href="#leads"]').filter({ visible: true }).first().click();
   await page.getByRole('searchbox').fill('test.contact');
   await expect(page.getByText('Важный контекст').filter({ visible: true })).toBeVisible();
+  await page.reload();
+  await page.getByRole('searchbox').fill('test.contact');
+  await expect(page.getByRole('heading', { name: 'Никого не нашли' })).toBeVisible();
+  await page.getByRole('searchbox').clear();
+  await expect(page.locator('.lead-card').filter({ visible: true })).toHaveCount(20);
 });
 
 test('search, filters and cards work without a table view', async ({ page }) => {
@@ -78,7 +86,7 @@ test('all sections fit narrow phones, tablets and desktop without page overflow'
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const section of ['pipeline', 'leads', 'analytics']) {
+    for (const section of ['pipeline', 'leads', 'analytics', 'overview']) {
       await page.goto('/#' + section); await expect(page.locator('h1')).toBeVisible(); await page.evaluate(() => document.fonts.ready);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${section} at ${width}px`).toBe(true);
       await expect(page.locator('a[href="#tasks"], a[href="#integrations"], .card-next-action, .task-cell, .due-badge')).toHaveCount(0);

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page, isMobile }) => {
-  await page.goto('/');
+  await page.goto('/#pipeline');
   await page.getByRole('button', { name: isMobile ? 'Добавить контакт' : 'Новый лид', exact: true }).click();
 });
 
@@ -25,7 +25,6 @@ test('chooses a stage and source, preserves form values and warns about unsaved 
   await dialog.getByRole('textbox', { name: 'Ник в Instagram' }).fill('menu.selection');
   await dialog.getByRole('button', { name: 'Добавить контакт', exact: true }).click();
   await expect(dialog).not.toBeVisible();
-  await page.reload();
   await page.getByRole('searchbox').fill('menu.selection');
   await page.getByRole('button', { name: 'Открыть контакт Выбор из меню', exact: true }).filter({ visible: true }).click();
   await expect(stage).toContainText('Созвон назначен');
